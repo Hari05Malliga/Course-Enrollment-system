@@ -1,6 +1,10 @@
 #include "structures.h"
 #include "client.h"
 
+int choice, userId;
+int debug;
+char buffer_message[256];
+
 int main() {
 
     determine_debug();  /* set the enable or disable of debug logs */
@@ -122,7 +126,8 @@ void showMenu(int sd)
                     break;
             case 2: enrollCourse(sd);
                     break;
-            case 3: break;
+            case 3: dropCourse(sd);
+                    break;
             case 4: viewEnrolledCourses(sd);
                     break;
             case 5: studentChangePasswd(sd);
@@ -131,6 +136,7 @@ void showMenu(int sd)
                     printf ("Thanks for using IIITB Academia\n");
                     exit(0);
             default: printf ("Invalid option selecction\n");
+                     showMenu (sd);
         }
     }
     else if (choice == 2) {
@@ -149,6 +155,7 @@ void showMenu(int sd)
                     printf ("Thanks for using IIITB Academia\n");
                     exit(0);
             default: printf ("Invalid option selecction\n");
+                     showMenu (sd);
         }
     }
     else if (choice == 3) {

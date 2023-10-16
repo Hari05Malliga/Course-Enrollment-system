@@ -51,6 +51,8 @@ extern void enrollCourse(int );
 
 extern void viewEnrolledCourses(int );
 
+extern void dropCourse(int );
+
 extern void determine_debug();
 
 /*

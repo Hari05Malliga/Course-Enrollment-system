@@ -27,7 +27,7 @@ extern void viewEnrolledCourses(int sd);
 extern bool studentChangePasswd (struct student record);
 extern bool addStudentToCourse(struct enroll record);
 extern bool validateStudentLoginId(struct student record);
-
+extern bool dropCourse(struct course record);
 
 /*
 ** From server_faculty.c

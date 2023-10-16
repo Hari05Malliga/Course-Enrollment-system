@@ -35,7 +35,7 @@ void enrollCourse(int sd)
     struct enroll record;
     memset (&record, '\0', sizeof(struct enroll));
 
-    printf ("Enter the Course ID : ");
+    printf ("Course ID : ");
     scanf ("%s", record.courseId);
 
     send (sd, &record, sizeof(struct enroll), 0);
@@ -54,6 +54,31 @@ void enrollCourse(int sd)
     DEBUG("Leaving enrollCourse().\n")
 }
 
+void dropCourse(int sd)
+{
+    DEBUG("Entering dropCourse().\n")
+    int select = 3;
+    send (sd, &select, sizeof(int), 0);
+
+    struct course record;
+    bool result;
+
+    printf ("Course ID : ");
+    scanf ("%s", record.courseId);
+
+    send (sd, &record, sizeof(struct course), 0);
+    recv (sd, &result, sizeof(bool), 0);
+
+    if (result) {
+        printf ("Course Successfully Droped.\n\n");
+    }
+    else {
+        printf ("Error: Either not enrolled in course or other issue.\n\n");
+    }
+
+    showMenu(sd);
+    DEBUG("Leaving dropCourse().\n")
+}
 
 void viewEnrolledCourses(int sd)
 {
@@ -74,6 +99,7 @@ void viewEnrolledCourses(int sd)
         if (strlen(record.course4) > 0) printf ("\t%s\n", record.course4);
         if (strlen(record.course5) > 0) printf ("\t%s\n", record.course5);
         if (strlen(record.course6) > 0) printf ("\t%s\n", record.course6);
+        printf ("\n");
     }
     else {
         printf ("You are currently not enrolled in any courses\n\n");

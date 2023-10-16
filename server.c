@@ -1,6 +1,10 @@
 #include "structures.h"
 #include "server.h"
 
+int userId;
+int debug;
+char buffer_message[256];
+
 void serverTask(int sd) 
 {
     DEBUG("Entering serverTask().")
@@ -50,7 +54,10 @@ void serverTask(int sd)
             }
 
             if (select == 3) {
-                
+                struct course record;
+                recv (sd, &record, sizeof(struct course), 0);
+                result = dropCourse (record);
+                send (sd, &result, sizeof(bool), 0);
             }
 
             if (select == 4) {
