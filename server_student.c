@@ -70,9 +70,11 @@ void viewAvailableCourse (int sd)
         memset (availCourse, '\0', sizeof(availCourse));
 
         while (read (fd, &currRec, sizeof(struct course)) > 0) {
-            memset(currCourse, '\0', sizeof(currCourse));
-            sprintf (currCourse, "\t%s - %s - Available Seat : %d\n", currRec.courseId, currRec.courseName, currRec.avilSeat);
-            strcat (availCourse, currCourse);
+            if ( currRec.status == 1) {
+                memset(currCourse, '\0', sizeof(currCourse));
+                sprintf (currCourse, "\t%s - %s - Available Seat : %d\n", currRec.courseId, currRec.courseName, currRec.avilSeat);
+                strcat (availCourse, currCourse);
+            }
         }
 
         send (sd, &availCourse, sizeof(availCourse), 0);
@@ -114,17 +116,22 @@ bool enrollCourse (struct enroll record)
     lseek (fd, (i)*sizeof(struct course), SEEK_SET);
     read (fd, &currRec, sizeof(struct course));
 
-    strcpy (record.courseName, currRec.courseName);
-    if (currRec.avilSeat > 0) {
-        if (addStudentToCourse(record)) {
-            currRec.avilSeat--;
+    if (currRec.status == 1) {
+        strcpy (record.courseName, currRec.courseName);
+        if (currRec.avilSeat > 0) {
+            if (addStudentToCourse(record)) {
+                currRec.avilSeat--;
+            }
         }
-    }
 
-    lseek (fd, (-1)*sizeof(struct course), SEEK_CUR);
-    int size = write (fd, &currRec, sizeof(struct course));
-    if ( size != 0)  result = true;
-    else  result = false;
+        lseek (fd, (-1)*sizeof(struct course), SEEK_CUR);
+        int size = write (fd, &currRec, sizeof(struct course));
+        if ( size != 0)  result = true;
+        else  result = false;
+    }
+    else {
+        result = false;
+    }
 
     lock.l_type=F_UNLCK;
     fcntl(fd,F_SETLK,&lock);

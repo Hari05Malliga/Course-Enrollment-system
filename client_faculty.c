@@ -52,6 +52,7 @@ void addCourse(int sd)
         scanf ("%d", &record.totalSeat);
 
         record.avilSeat = record.totalSeat;
+        record.status = 1;
 
         send (sd, &record, sizeof(struct course), 0);
 

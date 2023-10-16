@@ -81,6 +81,7 @@ struct course {
     int avilSeat;
     char courseId[MAX_COURSEID_LEN];
     char facultyId[MAX_LOGINID_LEN];
+    int status;
 };
 
 struct enroll {

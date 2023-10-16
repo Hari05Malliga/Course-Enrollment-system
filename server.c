@@ -121,6 +121,7 @@ void serverTask(int sd)
                 struct student record;
                 recv (sd, &record, sizeof(struct student), 0);
                 displayStudentAcc(record,sd);
+
             }
 
             if (select == 3) {

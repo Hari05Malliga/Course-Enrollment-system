@@ -61,41 +61,47 @@ void addStudent(int sd)
 void displayStudentAcc (int sd)
 {
     DEBUG("Entering displayStudentAcc().\n")
-    int select = 2;
-    send (sd, &select, sizeof(int), 0);
 
     struct student record;
-    memset (&record, '\0', sizeof(struct student));
     bool result;
+    memset (&record, '\0', sizeof(struct student));
 
     printf ("Student Login Id : ");
     getchar();
     scanf ("%[^\n]s", record.loginId);
 
-    send (sd, &record, sizeof(struct student), 0);
-    recv (sd, &result, sizeof(bool), 0);
+    if (strncmp(record.loginId, "MT", 2)==0) {
+        int select = 2;
+        send (sd, &select, sizeof(int), 0);
 
-    if (result) {
-        recv (sd, &record, sizeof(struct student), 0);
+        send (sd, &record, sizeof(struct student), 0);
+        recv (sd, &result, sizeof(bool), 0);
 
-        printf ("Name     : %s\n", record.userName);
-        printf ("Age      : %d\n", record.age);
-        printf ("Email    : %s\n", record.email);
-        printf ("Login ID : %s\n", record.loginId);
-        printf ("Status   : %d\n", record.status);
-        printf ("Course 1 : %s\n", record.course1);
-        printf ("Course 2 : %s\n", record.course2);
-        printf ("Course 3 : %s\n", record.course3);
-        printf ("Course 4 : %s\n", record.course4);
-        printf ("Course 5 : %s\n", record.course5);
-        printf ("Course 6 : %s\n", record.course6);
-        printf ("Eroll Count : %d\n", record.enrollCount);
-        printf ("Drop 1 : %s\n", record.drop1);
-        printf ("Drop 2 : %s\n", record.drop2);
-        printf ("Drop count : %d\n\n", record.dropCount);
+        if (result) {
+            recv (sd, &record, sizeof(struct student), 0);
+
+            printf ("Name     : %s\n", record.userName);
+            printf ("Age      : %d\n", record.age);
+            printf ("Email    : %s\n", record.email);
+            printf ("Login ID : %s\n", record.loginId);
+            printf ("Status   : %d\n", record.status);
+            printf ("Course 1 : %s\n", record.course1);
+            printf ("Course 2 : %s\n", record.course2);
+            printf ("Course 3 : %s\n", record.course3);
+            printf ("Course 4 : %s\n", record.course4);
+            printf ("Course 5 : %s\n", record.course5);
+            printf ("Course 6 : %s\n", record.course6);
+            printf ("Eroll Count : %d\n", record.enrollCount);
+            printf ("Drop 1 : %s\n", record.drop1);
+            printf ("Drop 2 : %s\n", record.drop2);
+            printf ("Drop count : %d\n\n", record.dropCount);
+        }
+        else {
+            printf ("Unable to retrieve user details\n\n");
+        }
     }
     else {
-        printf ("Unable to retrieve user details\n\n");
+        printf ("Invalid login ID.\n\n");
     }
 
     showMenu (sd);
@@ -162,8 +168,7 @@ void addFaculty(int sd)
 void displayFacultyAcc(int sd)
 {
     DEBUG("Entering displayFacultyAcc().\n")
-    int select = 4;
-    send (sd, &select, sizeof(int), 0);
+
 
     struct faculty record;
     memset (&record, '\0', sizeof(struct faculty));
@@ -173,31 +178,39 @@ void displayFacultyAcc(int sd)
     getchar();
     scanf ("%[^\n]s", record.loginId);
 
-    send (sd, &record, sizeof(struct faculty), 0);
-    recv (sd, &result, sizeof(bool), 0);
+    if (strncmp(record.loginId, "FT", 2)==0) {
+        int select = 4;
+        send (sd, &select, sizeof(int), 0);
 
-    if (result) {
-        recv (sd, &record, sizeof(struct faculty), 0);
+        send (sd, &record, sizeof(struct faculty), 0);
+        recv (sd, &result, sizeof(bool), 0);
 
-        printf ("Name          : %s\n", record.userName);
-        printf ("Designation   : %s\n", record.designation);
-        printf ("Department    : %s\n", record.department);
-        printf ("Email         : %s\n", record.email);
-        printf ("Login ID      : %s\n", record.loginId);
-        printf ("Course 1 ID   : %s\n", record.course1);
-        printf ("Course 1 Name : %s\n", record.course1_Name);
-        printf ("Course 2 ID   : %s\n", record.course2);
-        printf ("Course 2 Name : %s\n", record.course2_Name);
-        printf ("Course 3 ID   : %s\n", record.course3);
-        printf ("Course 3 Name : %s\n", record.course3_Name);
-        printf ("Course 4 ID   : %s\n", record.course4);
-        printf ("Course 4 Name : %s\n", record.course4_Name);
-        printf ("Course 5 ID   : %s\n", record.course5);
-        printf ("Course 5 Name : %s\n", record.course5_Name);
-        printf ("Course Count  : %d\n", record.courseCount);
+        if (result) {
+            recv (sd, &record, sizeof(struct faculty), 0);
+
+            printf ("Name          : %s\n", record.userName);
+            printf ("Designation   : %s\n", record.designation);
+            printf ("Department    : %s\n", record.department);
+            printf ("Email         : %s\n", record.email);
+            printf ("Login ID      : %s\n", record.loginId);
+            printf ("Course 1 ID   : %s\n", record.course1);
+            printf ("Course 1 Name : %s\n", record.course1_Name);
+            printf ("Course 2 ID   : %s\n", record.course2);
+            printf ("Course 2 Name : %s\n", record.course2_Name);
+            printf ("Course 3 ID   : %s\n", record.course3);
+            printf ("Course 3 Name : %s\n", record.course3_Name);
+            printf ("Course 4 ID   : %s\n", record.course4);
+            printf ("Course 4 Name : %s\n", record.course4_Name);
+            printf ("Course 5 ID   : %s\n", record.course5);
+            printf ("Course 5 Name : %s\n", record.course5_Name);
+            printf ("Course Count  : %d\n", record.courseCount);
+        }
+        else {
+            printf ("Unable to retrieve user details\n\n");
+        }
     }
     else {
-        printf ("Unable to retrieve user details\n\n");
+        printf ("Invalid login ID.\n\n");
     }
 
     showMenu (sd);
