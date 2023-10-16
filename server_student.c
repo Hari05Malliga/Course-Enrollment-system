@@ -350,6 +350,9 @@ bool studentChangePasswd (struct student record)
     int fd = open ("/home/hari/Desktop/Project/DB/student_db", O_RDWR, 0644);
     bool result;
 
+    sprintf (buffer_message, "fd : %d", fd);
+    DEBUG(buffer_message)
+
     struct flock lock;
     lock.l_type   = F_WRLCK;
     lock.l_whence = SEEK_SET;
@@ -357,11 +360,20 @@ bool studentChangePasswd (struct student record)
     lock.l_len    = sizeof(struct student);
     lock.l_pid    = getpid();
 
-    fcntl (fd, F_SETLKW, &lock);
+    int val = fcntl (fd, F_SETLKW, &lock);
+
+    sprintf (buffer_message, "fcntl return : %d", val);
+    DEBUG(buffer_message)
 
     struct student currRec;
     lseek (fd, (userId)*sizeof(struct student), SEEK_SET);
     read (fd, &currRec, sizeof(struct student));
+
+    sprintf (buffer_message, "currRec.login : %s\ncurrRec.passwd : %s\n", currRec.loginId, currRec.passwd);
+    DEBUG(buffer_message);
+
+    sprintf (buffer_message, "record.login : %s\nrecord.passwd : %s\n", record.loginId, record.passwd);
+    DEBUG(buffer_message);
 
     strcpy (currRec.passwd, record.passwd);
 
@@ -370,12 +382,14 @@ bool studentChangePasswd (struct student record)
     if ( size != 0)  result = true;
     else  result = false;
 
+    sprintf (buffer_message, "written size : %d", size);
+    DEBUG(buffer_message)
+
     lock.l_type=F_UNLCK;
     fcntl(fd,F_SETLK,&lock);
 
     close(fd);
-    sprintf(buffer_message,"Leaving studentChangePasswd() - returning value: %d\n",
-             result);
+    sprintf(buffer_message,"Leaving studentChangePasswd() - returning value: %d\n", result);
     DEBUG(buffer_message)
     return result;
 }

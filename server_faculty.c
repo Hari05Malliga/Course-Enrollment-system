@@ -190,8 +190,8 @@ void viewOfferedCourse(int sd)
 
     lock.l_type=F_UNLCK;
     fcntl(fd,F_SETLK,&lock);
-    DEBUG("Leaving viewOfferedCourse().\n")
     close(fd);
+    DEBUG("Leaving viewOfferedCourse().\n")
 }
 
 bool facultyChangePasswd (struct faculty record)

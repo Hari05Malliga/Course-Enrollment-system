@@ -113,7 +113,7 @@ void studentChangePasswd(int sd)
 {
     DEBUG("Entering studentChangePasswd().\n")
     int select = 5;
-    send (sd, &select, sizeof(struct student), 0);
+    send (sd, &select, sizeof(int), 0);
 
     struct student record;
     memset (&record, '\0', sizeof(struct student));
@@ -122,12 +122,15 @@ void studentChangePasswd(int sd)
     char *pass = getpass("");
     strcpy (record.passwd, pass);
 
+    sprintf (buffer_message,"record.passwd : %s\n", record.passwd);
+    DEBUG(buffer_message)
+
     send (sd, &record, sizeof(struct student), 0);
 
     bool result;
     recv (sd, &result, sizeof(bool), 0);
 
-    if (result) 
+    if (result)
         printf ("Succefully updated Password\n\n");
     else    
         printf ("Password Change attempt failed\n\n");
