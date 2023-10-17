@@ -48,8 +48,8 @@ struct student {
     char course6[MAX_COURSEDETAIL_LEN];
     int enrollCount;
 
-    char drop1[MAX_COURSEID_LEN];
-    char drop2[MAX_COURSEID_LEN];
+    char drop1[MAX_COURSEDETAIL_LEN];
+    char drop2[MAX_COURSEDETAIL_LEN];
     int dropCount;
 };
 

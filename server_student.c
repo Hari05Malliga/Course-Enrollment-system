@@ -183,23 +183,24 @@ bool dropCourse (struct course record)
     sprintf (buffer_message, "Course 1 : %s\n", record_student.course1);
     DEBUG (buffer_message)
 
-    sprintf (buffer_message, "Course 1 : %s\n", strtok(record_student.course1, " "));
-    DEBUG (buffer_message)
-
     sprintf (buffer_message, "Course ID : %s\nCourse Name : %s\n", record_course.courseId, record_course.courseName);
     DEBUG (buffer_message)
 
     bool result = false;
 
-    char temp1[256];    strcpy (temp1, record_student.course1);
-    char temp2[256];    strcpy (temp2, record_student.course2);
-    char temp3[256];    strcpy (temp3, record_student.course3);
-    char temp4[256];    strcpy (temp4, record_student.course4);
-    char temp5[256];    strcpy (temp5, record_student.course5);
-    char temp6[256];    strcpy (temp6, record_student.course6);
+    char temp1[MAX_COURSEDETAIL_LEN];    strcpy (temp1, record_student.course1);
+    char temp2[MAX_COURSEDETAIL_LEN];    strcpy (temp2, record_student.course2);
+    char temp3[MAX_COURSEDETAIL_LEN];    strcpy (temp3, record_student.course3);
+    char temp4[MAX_COURSEDETAIL_LEN];    strcpy (temp4, record_student.course4);
+    char temp5[MAX_COURSEDETAIL_LEN];    strcpy (temp5, record_student.course5);
+    char temp6[MAX_COURSEDETAIL_LEN];    strcpy (temp6, record_student.course6);
+
+    char holder[MAX_COURSEDETAIL_LEN];
+    memset (holder, '\0', MAX_COURSEDETAIL_LEN);
 
     if ( strcmp (strtok(temp1, " "), record_course.courseId)==0) {
         result = true;
+        strcpy (holder, record_student.course1);
         memset (record_student.course1, '\0', MAX_COURSEDETAIL_LEN);
 
         sprintf (buffer_message, "Course 1 : %s\n", record_student.course1);
@@ -208,45 +209,52 @@ bool dropCourse (struct course record)
 
     else if ( strcmp (strtok(temp2, " "), record_course.courseId)==0) {
         result = true;
+        strcpy (holder, record_student.course2);
         memset (record_student.course2, '\0', MAX_COURSEDETAIL_LEN);
     }
 
     else if ( strcmp (strtok(temp3, " "), record_course.courseId)==0) {
         result = true;
+        strcpy (holder, record_student.course3);
         memset (record_student.course3, '\0', MAX_COURSEDETAIL_LEN);
     }
 
     else if ( strcmp (strtok(temp4, " "), record_course.courseId)==0) {
         result = true;
+        strcpy (holder, record_student.course4);
         memset (record_student.course4, '\0', MAX_COURSEDETAIL_LEN);
     }
 
     else if ( strcmp (strtok(temp5, " "), record_course.courseId)==0) {
         result = true;
+        strcpy (holder, record_student.course5);
         memset (record_student.course5, '\0', MAX_COURSEDETAIL_LEN);
     }
 
     else if ( strcmp (strtok(temp6, " "), record_course.courseId)==0) {
         result = true;
+        strcpy (holder, record_student.course6);
         memset (record_student.course6, '\0', MAX_COURSEDETAIL_LEN);
     }
+
+    sprintf (buffer_message, "DropCount before update : %d\n", record_student.dropCount);
+    DEBUG (buffer_message)
 
     if (result && record_student.dropCount<2) {
 
         DEBUG("Entered the if condition...\n")
-        char holder[50];
 
-        if (strlen(record_student.drop1)==0) {
-            sprintf (holder, "%s - %s",record.courseId,record.courseName);
-            strcpy (record_student.drop2, holder);
-        }
-        else {
-            sprintf (holder, "%s - %s",record.courseId,record.courseName);
-            strcpy (record_student.drop1, holder);
-        }
+        if (strlen(record_student.drop1)==0)  strcpy (record_student.drop1, holder);
+        else  strcpy (record_student.drop2, holder);
 
-        record_student.dropCount++;
-        record_student.enrollCount--;
+        sprintf (buffer_message, "record_student.drop1 : %s\nrecord_student.drop2 : %s\nholder : %s\n", record_student.drop1, record_student.drop2, holder);
+        DEBUG (buffer_message)
+
+        record_student.dropCount = record_student.dropCount + 1;
+        record_student.enrollCount = record_student.enrollCount - 1;
+
+        sprintf (buffer_message, "dropCount : %d\n", record_student.dropCount);
+        DEBUG (buffer_message)
 
         lseek (fd_student, (-1)*sizeof(struct student), SEEK_CUR);
         int size = write (fd_student, &record_student, sizeof(struct student));
