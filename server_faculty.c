@@ -89,7 +89,7 @@ void addCourse (struct course record, int sd)
     lock.l_type   = F_WRLCK;
     lock.l_whence = SEEK_END;
     lock.l_start  = (-1) * sizeof(struct course);
-    lock.l_len    = 2 * sizeof(struct course);
+    lock.l_len    = sizeof(struct course);
     lock.l_pid    = getpid();
 
     fcntl(fd, F_SETLKW, &lock);
@@ -192,6 +192,219 @@ void viewOfferedCourse(int sd)
     fcntl(fd,F_SETLK,&lock);
     close(fd);
     DEBUG("Leaving viewOfferedCourse().\n")
+}
+
+void removeEnrollment (struct enroll record) 
+{
+    DEBUG ("Entering removeEnrollment().\n")
+
+    int student_ID;
+    sscanf (record.studentId, "MT%d", &student_ID); student_ID--;
+
+    int course_ID;
+    sscanf (record.courseId, "CS%d", &course_ID); course_ID--;
+
+    int fd_course = open ("/home/hari/Desktop/Project/DB/course_db", O_RDWR, 0644);
+    struct course record_course;
+    struct flock lock;
+
+    lock.l_type   = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start  = (course_ID) * sizeof(struct course);
+    lock.l_len    = sizeof(struct course);
+    lock.l_pid    = getpid();
+
+    fcntl(fd_course, F_SETLKW, &lock);
+    lseek (fd_course, (course_ID)*sizeof(struct course), SEEK_SET);
+    read (fd_course, &record_course, sizeof(struct course));
+
+    record_course.avilSeat--;
+    lseek (fd_course, (-1)*sizeof(struct course), SEEK_CUR);
+    write (fd_course, &record_course, sizeof(struct course));
+
+    lock.l_type=F_UNLCK;
+    fcntl(fd_course,F_SETLK,&lock);
+    close(fd_course);
+
+    int fd_student = open ("/home/hari/Desktop/Project/DB/student_db", O_RDWR, 0644);
+    struct student record_student;
+    
+    lock.l_type   = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start  = (student_ID) * sizeof(struct student);
+    lock.l_len    = sizeof(struct student);
+    lock.l_pid    = getpid();
+
+    int val = fcntl (fd_student, F_SETLKW, &lock);
+    sprintf (buffer_message, "fcntl return value : %d\n", val);
+    DEBUG (buffer_message)
+
+    lseek (fd_student, (student_ID)*sizeof(struct student), SEEK_SET);
+    read (fd_student, &record_student, sizeof(struct student));
+
+    char temp1[256];    strcpy (temp1, record_student.course1);
+    char temp2[256];    strcpy (temp2, record_student.course2);
+    char temp3[256];    strcpy (temp3, record_student.course3);
+    char temp4[256];    strcpy (temp4, record_student.course4);
+    char temp5[256];    strcpy (temp5, record_student.course5);
+    char temp6[256];    strcpy (temp6, record_student.course6);
+
+    sprintf (buffer_message, "record_student.course1 : %s\n", record_course.courseId);
+    DEBUG (buffer_message)
+
+
+    if ( strcmp (strtok(temp1, " "), record_course.courseId)==0) {
+        DEBUG ("Inside the if condition: 1")
+        memset (record_student.course1, '\0', MAX_COURSEDETAIL_LEN);
+    }
+
+
+    else if ( strcmp (strtok(temp2, " "), record_course.courseId)==0) {
+        DEBUG ("Inside the if condition: 2")
+        memset (record_student.course2, '\0', MAX_COURSEDETAIL_LEN);
+    }
+
+
+    else if ( strcmp (strtok(temp3, " "), record_course.courseId)==0) {
+        DEBUG ("Inside the if condition: 3")
+        memset (record_student.course3, '\0', MAX_COURSEDETAIL_LEN);
+    }
+
+
+    else if ( strcmp (strtok(temp4, " "), record_course.courseId)==0) {
+        DEBUG ("Inside the if condition: 4")
+        memset (record_student.course4, '\0', MAX_COURSEDETAIL_LEN);
+    }
+
+
+    else if ( strcmp (strtok(temp5, " "), record_course.courseId)==0) {
+        DEBUG ("Inside the if condition: 5")
+        memset (record_student.course5, '\0', MAX_COURSEDETAIL_LEN);
+    }
+
+
+    else if ( strcmp (strtok(temp6, " "), record_course.courseId)==0) {
+        DEBUG ("Inside the if condition: 6")
+        memset (record_student.course6, '\0', MAX_COURSEDETAIL_LEN);
+    }
+
+    record_student.enrollCount--;
+
+    DEBUG ("Before write...\n")
+
+    lseek (fd_student, (-1)*sizeof(struct student), SEEK_CUR);
+    int size = write (fd_student, &record_student, sizeof(struct student));
+
+    sprintf (buffer_message, "Written size : %d\n", size);
+    DEBUG (buffer_message)
+
+    lock.l_type=F_UNLCK;
+    fcntl(fd_course,F_SETLK,&lock);
+    close(fd_course);
+
+    DEBUG ("Leaving removeEnrollment().\n")
+}
+
+bool removeCourse (struct course record)
+{
+    DEBUG ("Enterning removeCourse().\n")
+    char temp[256];
+    strcpy(temp, "/home/hari/Desktop/Project/DB/course/");
+    strcat (temp, record.courseId);
+
+    int fd = open (temp, O_RDWR , 0644);
+    if (fd == -1) {
+        return false;
+    }
+
+    struct enroll currRec;
+    struct flock lock;
+
+    lock.l_type   = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start  = 0;
+    lock.l_len    = 0;
+    lock.l_pid    = getpid();
+
+    fcntl (fd, F_SETLKW, &lock);
+    
+    lseek (fd, 0, SEEK_SET);
+    while (read(fd, &currRec, sizeof(struct enroll))>0 && currRec.status==1) {
+        sprintf (buffer_message, "currRec.studentId : %s\n", currRec.studentId);
+        DEBUG (buffer_message)
+        removeEnrollment(currRec);
+    }
+
+    lock.l_type=F_UNLCK;
+    fcntl(fd,F_SETLK,&lock);
+    close(fd);
+
+    fd = open ("/home/hari/Desktop/Project/DB/course_db", O_RDWR, 0644);
+
+    int i;
+    sscanf (record.courseId, "CS%d", &i); i--;
+
+    lock.l_type   = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start  = (i) * sizeof(struct course);
+    lock.l_len    = sizeof(struct course);
+    lock.l_pid    = getpid();
+
+    fcntl(fd, F_SETLKW, &lock);
+
+    lseek (fd, (i)*sizeof(struct course), SEEK_SET);
+    read (fd, &record, sizeof(struct course));
+
+    if (record.status == 0) {
+        lock.l_type=F_UNLCK;
+        fcntl(fd,F_SETLK,&lock);
+        close(fd);
+        return false;
+    }
+
+    record.status = 0;
+    lseek (fd, (-1)*sizeof(struct course), SEEK_CUR);
+    int size = write (fd, &record, sizeof(struct course));
+    bool result_course;
+    if (size) result_course = true;
+    else result_course = false;
+
+    lock.l_type=F_UNLCK;
+    fcntl(fd,F_SETLK,&lock);
+    close(fd);
+
+    fd = open ("/home/hari/Desktop/Project/DB/faculty_db", O_RDWR, 0644);
+
+    struct faculty record_faculty;
+
+    lock.l_type   = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start  = (userId) * sizeof(struct faculty);
+    lock.l_len    = sizeof(struct faculty);
+    lock.l_pid    = getpid();
+
+    fcntl (fd, F_SETLKW, &lock);
+
+    lseek (fd, (userId)*sizeof(struct faculty), SEEK_SET);
+    read (fd, &record_faculty, sizeof(struct faculty));
+
+    if (strcmp(record_faculty.course1, record.courseId)==0) { strcpy (record_faculty.course1,""); strcpy (record_faculty.course1_Name,""); }
+    else if (strcmp(record_faculty.course2, record.courseId)==0) { strcpy (record_faculty.course2,""); strcpy (record_faculty.course2_Name,""); }
+    else if (strcmp(record_faculty.course3, record.courseId)==0) { strcpy (record_faculty.course3,""); strcpy (record_faculty.course3_Name,""); }
+    else if (strcmp(record_faculty.course4, record.courseId)==0) { strcpy (record_faculty.course4,""); strcpy (record_faculty.course4_Name,""); }
+    else if (strcmp(record_faculty.course5, record.courseId)==0) { strcpy (record_faculty.course5,""); strcpy (record_faculty.course5_Name,""); }
+
+    record_faculty.courseCount--;
+
+    lseek (fd, (-1)*sizeof(struct faculty), SEEK_CUR);
+    write (fd, &record_faculty, sizeof(struct faculty));
+
+    lock.l_type=F_UNLCK;
+    fcntl(fd,F_SETLK,&lock);
+    close(fd);
+
+    DEBUG ("Leaving removeCourse().\n")
+    return true;
 }
 
 bool facultyChangePasswd (struct faculty record)

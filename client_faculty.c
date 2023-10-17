@@ -77,7 +77,32 @@ void addCourse(int sd)
     DEBUG("Leaving addCourse().\n")
 }
 
+void removeCourse(int sd)
+{
+    DEBUG ("Entering removeCourse().\n")
+    int select = 3;
+    send (sd, &select, sizeof(int), 0);
 
+    struct course record;
+
+    printf ("Course ID : ");
+    getchar();
+    scanf ("%[^\n]s", record.courseId);
+
+    send (sd, &record, sizeof(struct course), 0);
+    bool result;
+    recv (sd, &result, sizeof(bool), 0);
+
+    if (result) {
+        printf ("Succesfully removed course from catalog.\n\n");
+    }
+    else {
+        printf ("Error : Wrong course ID provided or some other issue occured.\n\n ");
+    }
+
+    DEBUG ("Leaving removeCourse().\n")
+    showMenu(sd);
+}
 
 void facultyChangePasswd(int sd)
 {

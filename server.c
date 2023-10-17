@@ -91,7 +91,10 @@ void serverTask(int sd)
             }
 
             if (select == 3) {
-
+                struct course record;
+                recv (sd, &record, sizeof(struct course), 0);
+                result = removeCourse(record);
+                send (sd, &result, sizeof(bool), 0);
             }
 
             if (select == 4) {

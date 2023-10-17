@@ -147,7 +147,8 @@ void showMenu(int sd)
                     break;
             case 2: addCourse(sd);
                     break;
-            case 3: break;
+            case 3: removeCourse(sd);
+                    break;
             case 4: break;
             case 5: facultyChangePasswd(sd);
                     break;

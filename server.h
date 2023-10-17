@@ -38,6 +38,8 @@ extern void addCourse (struct course record, int sd);
 extern void viewOfferedCourse(int sd);
 extern bool facultyChangePasswd (struct faculty record);
 extern bool validateFacultyLoginId(struct faculty record);
+extern bool removeCourse(struct course record);
+extern void removeEnrollment(struct enroll record);
 
 /*
 ** Global data for server.

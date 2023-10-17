@@ -189,10 +189,16 @@ bool dropCourse (struct course record)
     sprintf (buffer_message, "Course ID : %s\nCourse Name : %s\n", record_course.courseId, record_course.courseName);
     DEBUG (buffer_message)
 
-    char *temp;
     bool result = false;
 
-    if ( strcmp (strtok(record_student.course1, " "), record_course.courseId)==0) {
+    char temp1[256];    strcpy (temp1, record_student.course1);
+    char temp2[256];    strcpy (temp2, record_student.course2);
+    char temp3[256];    strcpy (temp3, record_student.course3);
+    char temp4[256];    strcpy (temp4, record_student.course4);
+    char temp5[256];    strcpy (temp5, record_student.course5);
+    char temp6[256];    strcpy (temp6, record_student.course6);
+
+    if ( strcmp (strtok(temp1, " "), record_course.courseId)==0) {
         result = true;
         memset (record_student.course1, '\0', MAX_COURSEDETAIL_LEN);
 
@@ -200,27 +206,27 @@ bool dropCourse (struct course record)
         DEBUG (buffer_message)
     }
 
-    else if ( strcmp (strtok(record_student.course2, " "), record_course.courseId)==0) {
+    else if ( strcmp (strtok(temp2, " "), record_course.courseId)==0) {
         result = true;
         memset (record_student.course2, '\0', MAX_COURSEDETAIL_LEN);
     }
 
-    else if ( strcmp (strtok(record_student.course3, " "), record_course.courseId)==0) {
+    else if ( strcmp (strtok(temp3, " "), record_course.courseId)==0) {
         result = true;
         memset (record_student.course3, '\0', MAX_COURSEDETAIL_LEN);
     }
 
-    else if ( strcmp (strtok(record_student.course4, " "), record_course.courseId)==0) {
+    else if ( strcmp (strtok(temp4, " "), record_course.courseId)==0) {
         result = true;
         memset (record_student.course4, '\0', MAX_COURSEDETAIL_LEN);
     }
 
-    else if ( strcmp (strtok(record_student.course5, " "), record_course.courseId)==0) {
+    else if ( strcmp (strtok(temp5, " "), record_course.courseId)==0) {
         result = true;
         memset (record_student.course5, '\0', MAX_COURSEDETAIL_LEN);
     }
 
-    else if ( strcmp (strtok(record_student.course6, " "), record_course.courseId)==0) {
+    else if ( strcmp (strtok(temp6, " "), record_course.courseId)==0) {
         result = true;
         memset (record_student.course6, '\0', MAX_COURSEDETAIL_LEN);
     }
@@ -228,12 +234,20 @@ bool dropCourse (struct course record)
     if (result && record_student.dropCount<2) {
 
         DEBUG("Entered the if condition...\n")
+        char holder[50];
 
-        if (strlen(record_student.drop1)>0) strcpy (record_student.drop1, record.courseId);
-        else strcpy (record_student.drop2, record.courseId);
+        if (strlen(record_student.drop1)==0) {
+            sprintf (holder, "%s - %s",record.courseId,record.courseName);
+            strcpy (record_student.drop2, holder);
+        }
+        else {
+            sprintf (holder, "%s - %s",record.courseId,record.courseName);
+            strcpy (record_student.drop1, holder);
+        }
 
         record_student.dropCount++;
         record_student.enrollCount--;
+
         lseek (fd_student, (-1)*sizeof(struct student), SEEK_CUR);
         int size = write (fd_student, &record_student, sizeof(struct student));
         if (size == -1) {
